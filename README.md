@@ -38,12 +38,12 @@ The `libretro_data/` directory (~400 MB) contains the game name database and is 
 python fetch_data.py
 ```
 
-This will automatically download and extract the data from the latest [GitHub Release](https://github.com/YOUR_USERNAME/game-cover-downloader/releases).
+This will automatically download and extract the data from the latest [GitHub Release](https://github.com/wang1025475397/game-cover-downloader/releases).
 
 <details>
 <summary>Manual download</summary>
 
-If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [Releases page](https://github.com/YOUR_USERNAME/game-cover-downloader/releases) and extract it to the project root:
+If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [Releases page](https://github.com/wang1025475397/game-cover-downloader/releases) and extract it to the project root:
 
 ```
 game-cover-downloader/
@@ -117,7 +117,7 @@ This tool follows the [Agent Skills standard](https://docs.anthropic.com/en/docs
 
 ```bash
 # Example for Claude Code — replace the path for other clients
-git clone https://github.com/<username>/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
+git clone https://github.com/wang1025475397/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
 ```
 
 **Option 2: Manual Copy**

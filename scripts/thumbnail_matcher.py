@@ -47,7 +47,7 @@ def _check_libretro_data() -> None:
     raise FileNotFoundError(
         "libretro_data 目录不存在。请先运行以下命令下载数据：\n"
         "  python fetch_data.py\n"
-        "或从 GitHub Release 手动下载: https://github.com/YOUR_USERNAME/game-cover-downloader/releases"
+        "或从 GitHub Release 手动下载: https://github.com/wang1025475397/game-cover-downloader/releases"
     )
 
 

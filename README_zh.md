@@ -38,12 +38,12 @@ pip install -r requirements.txt
 python fetch_data.py
 ```
 
-脚本会自动从最新 [GitHub Release](https://github.com/YOUR_USERNAME/game-cover-downloader/releases) 下载并解压数据。
+脚本会自动从最新 [GitHub Release](https://github.com/wang1025475397/game-cover-downloader/releases) 下载并解压数据。
 
 <details>
 <summary>手动下载</summary>
 
-如果 `fetch_data.py` 无法运行，可以从 [Releases 页面](https://github.com/YOUR_USERNAME/game-cover-downloader/releases) 手动下载 `libretro_data.zip` 并解压到项目根目录：
+如果 `fetch_data.py` 无法运行，可以从 [Releases 页面](https://github.com/wang1025475397/game-cover-downloader/releases) 手动下载 `libretro_data.zip` 并解压到项目根目录：
 
 ```
 game-cover-downloader/
@@ -117,7 +117,7 @@ python -m scripts.cover_cli save-preset --name "my-n64" --rule '{"Named_Boxarts"
 
 ```bash
 # Claude Code 示例，其他客户端替换路径即可
-git clone https://github.com/<你的用户名>/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
+git clone https://github.com/wang1025475397/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
 ```
 
 **方式二：手动复制**
