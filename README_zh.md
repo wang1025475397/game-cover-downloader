@@ -6,6 +6,8 @@
 
 作为 AI 编程助手的 Skill 使用时，可用自然语言驱动下载，无需记忆命令行参数。
 
+📺 [复古玩家福音！AI Skill 一键下载经典游戏封面](https://www.bilibili.com/video/BV1oiEx6EEqJ/?share_source=copy_web&vd_source=7105ccdae0889f00141fbef0c45e40f6)
+
 ## 功能特性
 
 - 🎮 按游戏名、单个 ROM 文件或 ROM 文件夹批量下载封面

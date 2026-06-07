@@ -6,6 +6,8 @@ A CLI tool for batch downloading game covers, logos, title screens, and screensh
 
 When used as an AI coding assistant Skill, you can drive downloads with natural language — no need to memorize CLI arguments.
 
+📺 [Retro Gamer's Blessing: AI Skill for One-Click Classic Game Cover Downloads](https://www.bilibili.com/video/BV1oiEx6EEqJ/?share_source=copy_web&vd_source=7105ccdae0889f00141fbef0c45e40f6)
+
 ## Features
 
 - 🎮 Download covers by game name, single ROM file, or ROM folder
