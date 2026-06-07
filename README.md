@@ -43,15 +43,25 @@ This will automatically download and extract the data from the latest [GitHub Re
 <details>
 <summary>Manual download</summary>
 
-If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [Releases page](https://github.com/wang1025475397/game-cover-downloader/releases) and extract it to the project root:
+If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [Releases page](https://github.com/wang1025475397/game-cover-downloader/releases) and extract it to the project root.
+
+Make sure the final structure looks like this (avoid nested `libretro_data/libretro_data/`):
 
 ```
 game-cover-downloader/
-  libretro_data/    ← extract here
+  libretro_data/         ← this folder must be directly under the project root
     mediadata/
     metadata/
     merged_games.json
     platform-aliases.json
+```
+
+**Wrong** ❌:
+```
+game-cover-downloader/
+  libretro_data/
+    libretro_data/       ← nested! drag the inner folder up one level
+      mediadata/
 ```
 
 </details>

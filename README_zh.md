@@ -43,15 +43,25 @@ python fetch_data.py
 <details>
 <summary>手动下载</summary>
 
-如果 `fetch_data.py` 无法运行，可以从 [Releases 页面](https://github.com/wang1025475397/game-cover-downloader/releases) 手动下载 `libretro_data.zip` 并解压到项目根目录：
+如果 `fetch_data.py` 无法运行，可以从 [Releases 页面](https://github.com/wang1025475397/game-cover-downloader/releases) 手动下载 `libretro_data.zip` 并解压到项目根目录。
+
+确保最终结构如下（避免 `libretro_data/libretro_data/` 嵌套）：
 
 ```
 game-cover-downloader/
-  libretro_data/    ← 解压到这里
+  libretro_data/         ← 这个文件夹必须直接在项目根目录下
     mediadata/
     metadata/
     merged_games.json
     platform-aliases.json
+```
+
+**错误** ❌：
+```
+game-cover-downloader/
+  libretro_data/
+    libretro_data/       ← 嵌套了！把内层文件夹上移一级
+      mediadata/
 ```
 
 </details>

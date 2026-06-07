@@ -34,7 +34,7 @@ def is_data_present() -> bool:
 
 
 def download_and_extract(url: str, dest: Path) -> None:
-    """Download a zip file and extract it to dest parent directory."""
+    """Download a zip file and extract it so that dest/ contains the data."""
     print(f"正在下载数据包...")
     resp = requests.get(url, stream=True, timeout=120)
     resp.raise_for_status()
@@ -55,8 +55,21 @@ def download_and_extract(url: str, dest: Path) -> None:
 
         print("正在解压...")
         with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(dest.parent)
-        print("数据包安装完成！")
+            names = zf.namelist()
+            # Detect if zip has a top-level libretro_data/ directory
+            has_toplevel = any(n.startswith("libretro_data/") or n == "libretro_data" for n in names)
+            if has_toplevel:
+                # Zip contains libretro_data/ at top level → extract to project root
+                zf.extractall(dest.parent)
+            else:
+                # Zip contents are flat (mediadata/, metadata/, ...) → extract into libretro_data/
+                zf.extractall(dest)
+
+        if not is_data_present():
+            print("警告：解压后未检测到完整数据，请检查 zip 文件结构。", file=sys.stderr)
+            print(f"期望结构：libretro_data/mediadata/ 或 libretro_data/libretro_data/mediadata/", file=sys.stderr)
+        else:
+            print("数据包安装完成！")
     finally:
         if zip_path.exists():
             zip_path.unlink()
