@@ -840,6 +840,196 @@ def download_folder(args: argparse.Namespace) -> int:
     return print_json(summary, 0 if matched else 2)
 
 
+def download_batch(args: argparse.Namespace) -> int:
+    """Batch download covers for multiple game names, with multi-threaded downloads."""
+    tm.SHOW_PROGRESS = False
+    output_dir = Path(args.output)
+    thumb_types: list[str] = args.types
+    save_rule: dict[str, dict[str, str]] = args.save_rule
+    ensure_thumbnail_json(args.system, args.json_dir, args.address)
+    thumbnail_index = tm.load_system_thumbnails_json(args.system, args.json_dir)
+
+    # Parse names mapping: {"save_as_name": "No-Intro Name", ...}
+    raw = args.names.strip()
+    if raw.startswith("@"):
+        raw = Path(raw[1:]).read_text(encoding="utf-8")
+    names_map: dict[str, str] = json.loads(raw)
+    if not names_map:
+        return print_json({"ok": False, "error": "names mapping is empty"}, 1)
+
+    system = args.system
+
+    # Build match index once for all lookups
+    match_index = tm.build_thumbnail_match_index(thumbnail_index, no_meta=args.no_meta, hack=args.hack)
+
+    # Phase 1: match all names
+    all_results: list[dict] = []
+    for save_as, game_name in names_map.items():
+        matches = tm.find_best_thumbnails_from_index(
+            game_name,
+            thumbnail_index,
+            match_index,
+            min_score=args.min_score,
+            limit=args.limit,
+            no_meta=args.no_meta,
+            hack=args.hack,
+            before=args.before,
+        )
+        match = matches[0] if matches else None
+        base_name = save_as
+
+        for thumb_type in thumb_types:
+            if match:
+                selected_type, url = pick_match_url(match, thumb_type, fallback=False)
+                if not url and matches:
+                    for alt_match in matches[1:]:
+                        alt_type, alt_url = pick_match_url(alt_match, thumb_type, fallback=False)
+                        if alt_url:
+                            selected_type, url = alt_type, alt_url
+                            break
+                if not url:
+                    selected_type, url = find_type_url(
+                        game_name, thumb_type, thumbnail_index,
+                        min_score=args.min_score, no_meta=args.no_meta,
+                        hack=args.hack, before=args.before,
+                    )
+            else:
+                selected_type, url = None, None
+
+            saved_to = None
+            if url:
+                saved_to = resolve_save_to(
+                    thumb_type, base_name, base_name, url, save_rule, output_dir,
+                )
+
+            all_results.append({
+                "save_as": save_as,
+                "game_name": game_name,
+                "matched": bool(url),
+                "downloaded": False,
+                "skipped": False,
+                "skip_reason": None,
+                "attempts": 0,
+                "error": None,
+                "selected_type": selected_type,
+                "cover_url": url,
+                "saved_to": str(saved_to) if saved_to else None,
+                "thumb_type": thumb_type,
+            })
+
+    matched_indexes = [i for i, r in enumerate(all_results) if r["matched"]]
+
+    if args.progress:
+        print_event(
+            "match_done",
+            total_names=len(names_map),
+            matched_count=len(matched_indexes),
+            unmatched_count=len(all_results) - len(matched_indexes),
+        )
+
+    # Phase 2: download with multi-threading
+    existing = args.existing
+    if not args.dry_run and matched_indexes:
+        existing_results = [
+            all_results[i]
+            for i in matched_indexes
+            if all_results[i].get("saved_to") and Path(all_results[i]["saved_to"]).exists()
+        ]
+        if existing == "ask" and existing_results:
+            confirm = confirm_overwrite([item["saved_to"] for item in existing_results])
+            if confirm is None:
+                payload = overwrite_required_payload("download-batch", existing_results)
+                payload.update({
+                    "system": system,
+                    "output": str(output_dir),
+                    "types": thumb_types,
+                })
+                write_report(payload, args.report)
+                if args.progress:
+                    print_event("overwrite_required", **payload)
+                    return 3
+                return print_json(payload, 3)
+            existing = "overwrite" if confirm else "skip"
+
+        total = len(matched_indexes)
+        workers = max(1, args.download_workers)
+        if workers == 1:
+            for current, result_index in enumerate(matched_indexes, start=1):
+                if args.progress:
+                    print_event("download_start", index=current, total=total, save_as=all_results[result_index]["save_as"], thumb_type=all_results[result_index].get("thumb_type"))
+                all_results[result_index] = download_result(
+                    all_results[result_index],
+                    retries=args.retries,
+                    retry_delay=args.retry_delay,
+                    existing=existing,
+                )
+                if args.progress:
+                    event = "download_done" if all_results[result_index]["downloaded"] else "download_failed"
+                    print_event(event, index=current, total=total, **all_results[result_index])
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {}
+                for current, result_index in enumerate(matched_indexes, start=1):
+                    if args.progress:
+                        print_event("download_start", index=current, total=total, save_as=all_results[result_index]["save_as"], thumb_type=all_results[result_index].get("thumb_type"))
+                    futures[executor.submit(
+                        download_result,
+                        all_results[result_index],
+                        retries=args.retries,
+                        retry_delay=args.retry_delay,
+                        existing=existing,
+                    )] = (current, result_index)
+                for future in as_completed(futures):
+                    current, result_index = futures[future]
+                    all_results[result_index] = future.result()
+                    if args.progress:
+                        event = "download_done" if all_results[result_index]["downloaded"] else "download_failed"
+                        print_event(event, index=current, total=total, **all_results[result_index])
+
+    matched = [r for r in all_results if r["matched"]]
+    downloaded = [r for r in all_results if r["downloaded"]]
+    skipped = [r for r in all_results if r["skipped"]]
+    failed = [r for r in all_results if r["error"]]
+    unmatched_items = [r for r in all_results if not r["matched"]]
+
+    per_type_summary = {}
+    for thumb_type in thumb_types:
+        type_items = [r for r in all_results if r.get("thumb_type") == thumb_type]
+        per_type_summary[thumb_type] = {
+            "matched_count": sum(1 for r in type_items if r["matched"]),
+            "downloaded_count": sum(1 for r in type_items if r["downloaded"]),
+            "skipped_count": sum(1 for r in type_items if r["skipped"]),
+            "failed_count": sum(1 for r in type_items if r["error"]),
+            "unmatched_count": sum(1 for r in type_items if not r["matched"]),
+        }
+
+    summary = {
+        "ok": bool(matched) and not failed,
+        "mode": "download-batch",
+        "dry_run": args.dry_run,
+        "system": system,
+        "output": str(output_dir),
+        "types": thumb_types,
+        "save_rule": save_rule,
+        "names_count": len(names_map),
+        "downloaded_count": 0 if args.dry_run else len(downloaded),
+        "skipped_count": len(skipped),
+        "matched_count": len(matched),
+        "failed_count": len(failed),
+        "unmatched_count": len(unmatched_items),
+        "per_type": per_type_summary,
+        "unmatched": unmatched_items,
+        "failed": failed,
+        "items": all_results,
+    }
+    report = {key: value for key, value in summary.items() if key not in {"items", "unmatched", "failed"}}
+    write_report(report, args.report)
+    if args.progress:
+        print_event("summary", **{key: value for key, value in summary.items() if key not in {"items", "unmatched", "failed"}})
+        return 0 if matched else 2
+    return print_json(summary, 0 if matched else 2)
+
+
 def add_common_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--output", required=True, help="封面保存目录")
     parser.add_argument(
@@ -895,6 +1085,8 @@ def _post_parse_args(args: argparse.Namespace) -> None:
     """Process parsed args to resolve types and save rule."""
     # Skip for commands that don't use common options
     if args.command in ("save-preset", "list-presets"):
+        return
+    if not hasattr(args, "output"):
         return
     args.types = parse_types(args.type_raw)
     args.save_rule = parse_save_rule(args.save_rule_raw, args.types, Path(args.output), preset=args.preset)
@@ -968,6 +1160,17 @@ def build_parser() -> argparse.ArgumentParser:
     folder_parser.add_argument("--download-workers", type=int, default=4, help="封面下载线程数")
     add_common_options(folder_parser)
     folder_parser.set_defaults(func=download_folder)
+
+    batch_parser = subparsers.add_parser("download-batch", help="批量按游戏名下载封面（二阶段恢复用）")
+    batch_parser.add_argument("--system", required=True, help="Libretro 平台名")
+    batch_parser.add_argument(
+        "--names",
+        required=True,
+        help='游戏名映射 JSON 或 @文件路径。格式：{"ROM文件名": "No-Intro 名", ...}',
+    )
+    batch_parser.add_argument("--download-workers", type=int, default=4, help="封面下载线程数")
+    add_common_options(batch_parser)
+    batch_parser.set_defaults(func=download_batch)
 
     save_preset_parser = subparsers.add_parser("save-preset", help="保存自定义规则到用户规则文件")
     save_preset_parser.add_argument("--name", required=True, help="规则名称")

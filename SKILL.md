@@ -264,6 +264,26 @@ python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Ninte
 # 默认4线程下载，可加 --download-workers 8 开启更高线程
 ```
 
+### Batch download by game names (Stage 2 recovery)
+
+```powershell
+python -m scripts.cover_cli download-batch --system "<Libretro system>" --output "<output folder>" --names '{"<rom stem>": "<No-Intro name>", ...}'
+```
+
+The `--names` parameter is a JSON mapping from ROM filename stems to No-Intro game names. Supports `@file.json` to read from a file. The command matches all names first, then downloads covers with multi-threading (`--download-workers`, default 4).
+
+```powershell
+python -m scripts.cover_cli download-batch \
+  --system "Nintendo - Game Boy Color" \
+  --output "D:\covers\gbc" \
+  --names '{"超级马里奥": "Super Mario Bros.", "塞尔达": "The Legend of Zelda - Link'\''s Awakening"}' \
+  --preset es-de \
+  --existing skip \
+  --download-workers 8 \
+  --progress \
+  --report ".\cover-retry-report.json"
+```
+
 ### Dry run
 
 Use `--dry-run` before downloading if the user wants to preview matches or verify accuracy.
@@ -287,6 +307,7 @@ python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --output "D:\co
 - `--extensions`: comma-separated ROM extensions for folder scanning.
 - `--workers`: number of scan workers for folder mode.
 - `--download-workers`: number of cover download threads for folder mode, defaults to `4`. Users can specify a higher value (e.g. `8` or `16`) for faster downloads on high-bandwidth connections.
+- `--names`: (download-batch only) JSON mapping from ROM filename stems to No-Intro game names, or `@file.json` to read from a file.
 - `--existing`: what to do when target files already exist: `ask`, `skip`, or `overwrite`. Defaults to `ask`.
 - `--retries`: retry count for failed image downloads, defaults to `2`.
 - `--retry-delay`: seconds to wait before each retry, defaults to `1.0`.
@@ -354,20 +375,60 @@ Example prompt:
 
 Use this flow when the user confirms, or when the user explicitly asks to retry unmatched games, recover failed cover matches, or search No-Intro names online.
 
+### Stage 2: Batch Recovery Flow
+
+The second stage first collects ALL unmatched ROM names, then downloads them in one batch with multi-threading.
+
 1. Run or reuse a folder command with `--report` so unmatched ROMs are available in a JSON file.
-2. Read the report and collect `unmatched` items. Use each item's `file`, `crc`, and ROM filename stem.
-3. For each unmatched ROM, search the web with queries like:
+2. Read the report and collect `unmatched` items. Use each item's `file` and ROM filename stem.
+3. **For each unmatched ROM**, search the web with queries like:
    - `"<rom stem>" "<system>" "No-Intro"`
    - `"<rom stem>" "Game Boy Color" English title`
    - `"<rom stem>" "GBC" rom name`
 4. Prefer exact No-Intro-style names matching the requested system and region. If confidence is low, ask the user before downloading.
-5. Retry the cover download by name, while preserving the original ROM filename:
+5. **Collect all name mappings** into a JSON object: `{"<rom stem>": "<No-Intro name>", ...}`
+6. Run `download-batch` with the complete mapping — this matches all names first, then downloads with multi-threading:
 
 ```powershell
-python -m scripts.cover_cli download-game --name "<No-Intro name>" --system "<Libretro system>" --output "<output folder>" --save-as "<rom stem>" --existing skip --report ".\cover-retry-report.json"
+python -m scripts.cover_cli download-batch \
+  --system "<Libretro system>" \
+  --output "<output folder>" \
+  --names '{"<rom stem 1>": "<No-Intro name 1>", "<rom stem 2>": "<No-Intro name 2>"}' \
+  --existing skip \
+  --download-workers 4 \
+  --preset es-de
 ```
 
-6. Summarize recovered, still-unmatched, and low-confidence items. Include source URLs when web search was used.
+Or write the mapping to a file for cleaner command lines:
+
+```powershell
+# Write names mapping to file
+# Content: {"超级马里奥": "Super Mario Bros.", "塞尔达": "The Legend of Zelda"}
+python -m scripts.cover_cli download-batch \
+  --system "<Libretro system>" \
+  --output "<output folder>" \
+  --names "@retry_names.json" \
+  --existing skip \
+  --download-workers 4 \
+  --preset es-de \
+  --report ".\cover-retry-report.json"
+```
+
+7. Summarize recovered, still-unmatched, and low-confidence items. Include source URLs when web search was used.
+
+### Stage 2 Retry Loop (handling remaining failures)
+
+If `download-batch` still has `failed` or `unmatched` items, the names used were likely incorrect. **Do not blindly retry with the same names** — the AI must re-analyze and find better names:
+
+1. Read the `download-batch` report (from `--report`) and identify `failed` + `unmatched` items.
+2. For each failed/unmatched item, **re-search the web** with alternative queries:
+   - Try different search terms: `"<rom stem>" "<system>" rom dat`, `"<rom stem>" redump`, or search in the ROM's original language
+   - Try partial name matching: search only the core part of the ROM name, drop region/version tags
+   - Check No-Intro DAT files or ROM databases for the exact title
+3. If a better name is found, update the names mapping and run `download-batch` again with only the corrected items.
+4. If no better name can be found after reasonable effort, report these as "permanently unmatched" to the user.
+
+**Important**: The retry logic lives in the AI (this SKILL.md), not in the CLI tool. `download-batch` simply takes a mapping and downloads — it does not guess or auto-correct game names.
 
 ## Sandbox permission handling
 
