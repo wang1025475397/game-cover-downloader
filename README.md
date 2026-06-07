@@ -68,6 +68,19 @@ game-cover-downloader/
 
 ## Quick Start
 
+### As an AI Skill (Natural Language)
+
+When installed as a Skill, just describe what you want in your AI coding assistant's chat:
+
+| You say | What happens |
+|---------|-------------|
+| "Download covers for all GBC games in F:\Roms\gbc to F:\Roms\gbc\download" | `download-folder --path "F:\Roms\gbc" --output "F:\Roms\gbc\download"` |
+| "Download F:\Roms\gbc covers in ES-DE format" | `--preset es-de` applied automatically |
+| "Download N64 covers and logos in Pegasus layout" | `--type boxarts,logos --preset pegasus` |
+| "What download presets are available?" | Runs `list-presets` and shows details |
+| "Save this rule as my-n64" | Writes to user_rules.json via `save-preset` |
+| "Download with 16 threads" | `--download-workers 16` |
+
 ### CLI Usage
 
 ```bash
@@ -77,21 +90,27 @@ python -m scripts.cover_cli download-game --name "Super Mario Bros." --system "N
 # Download a single ROM file's cover
 python -m scripts.cover_cli download-file --path "F:\Roms\gbc\Zelda.zip" --output "./covers"
 
-# Batch download covers for a ROM folder
-python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "./covers" --download-workers 4
+# Download all GBC game covers from a ROM folder
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download"
+
+# Same as above, with ES-DE layout and cover+logo
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download" --type boxarts,logos --preset es-de
 ```
 
 ### Using Preset Layouts
 
 ```bash
-# Pegasus frontend layout (per-game folder)
-python -m scripts.cover_cli download-folder --path "F:\Roms\fc" --system "Nintendo - Nintendo Entertainment System" --output "./media" --type boxarts,logos --preset pegasus
+# Pegasus: each game gets its own folder with boxFront.png, logo.png, etc.
+python -m scripts.cover_cli download-folder --path "F:\Roms\fc" --system "Nintendo - Nintendo Entertainment System" --output "F:\Roms\fc\media" --type boxarts,logos --preset pegasus
 
-# ES-DE frontend layout (per-type subdirectories)
-python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "./media" --type boxarts,logos --preset es-de
+# ES-DE: covers/, marquees/, titlescreens/, screenshots/ subdirectories
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download" --type boxarts,logos --preset es-de
 
-# RetroArch standard structure
-python -m scripts.cover_cli download-folder --path "F:\Roms\n64" --system "Nintendo - Nintendo 64" --output "./thumbnails" --type all --preset retroarch
+# RetroArch: Named_Boxarts/, Named_Logos/, etc. with matched game names
+python -m scripts.cover_cli download-folder --path "F:\Roms\n64" --system "Nintendo - Nintendo 64" --output "F:\Roms\n64\thumbnails" --type all --preset retroarch
+
+# Simple: all covers directly in the output folder
+python -m scripts.cover_cli download-folder --path "F:\Roms\snes" --system "Nintendo - Super Nintendo Entertainment System" --output "F:\Roms\snes\covers" --preset simple
 ```
 
 ### List Available Presets

@@ -68,6 +68,19 @@ game-cover-downloader/
 
 ## 快速开始
 
+### 作为 AI Skill 使用（自然语言）
+
+安装为 Skill 后，在 AI 编程助手的对话中直接描述你的需求：
+
+| 你说 | AI 会执行 |
+|------|----------|
+| "帮我下载 F:\Roms\gbc 下全部游戏的封面到 download 文件夹" | `download-folder --path "F:\Roms\gbc" --output "F:\Roms\gbc\download"` |
+| "按 ES-DE 格式下载 F:\Roms\gbc 的封面" | 自动应用 `--preset es-de` |
+| "用天马格式下载 N64 的封面和 logo" | `--type boxarts,logos --preset pegasus` |
+| "有哪些下载规则？" | 运行 `list-presets` 并展示详情 |
+| "把这个规则存为 my-n64" | 通过 `save-preset` 写入 user_rules.json |
+| "16 线程下载" | `--download-workers 16` |
+
 ### 命令行直接使用
 
 ```bash
@@ -77,21 +90,27 @@ python -m scripts.cover_cli download-game --name "Super Mario Bros." --system "N
 # 下载单个 ROM 文件的封面
 python -m scripts.cover_cli download-file --path "F:\Roms\gbc\Zelda.zip" --output "./covers"
 
-# 批量下载整个 ROM 文件夹的封面
-python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "./covers" --download-workers 4
+# 下载 F:\Roms\gbc 目录下全部游戏的封面
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download"
+
+# 同上，按 ES-DE 格式下载封面和 logo
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download" --type boxarts,logos --preset es-de
 ```
 
 ### 使用预设布局
 
 ```bash
-# Pegasus 前端格式（每个游戏一个文件夹）
-python -m scripts.cover_cli download-folder --path "F:\Roms\fc" --system "Nintendo - Nintendo Entertainment System" --output "./media" --type boxarts,logos --preset pegasus
+# Pegasus：每个游戏一个文件夹，封面 boxFront.png，logo.png
+python -m scripts.cover_cli download-folder --path "F:\Roms\fc" --system "Nintendo - Nintendo Entertainment System" --output "F:\Roms\fc\media" --type boxarts,logos --preset pegasus
 
-# ES-DE 前端格式（按类型分子目录）
-python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "./media" --type boxarts,logos --preset es-de
+# ES-DE：按类型分子目录 covers/marquees/titlescreens/screenshots
+python -m scripts.cover_cli download-folder --path "F:\Roms\gbc" --system "Nintendo - Game Boy Color" --output "F:\Roms\gbc\download" --type boxarts,logos --preset es-de
 
-# RetroArch 标准结构
-python -m scripts.cover_cli download-folder --path "F:\Roms\n64" --system "Nintendo - Nintendo 64" --output "./thumbnails" --type all --preset retroarch
+# RetroArch：Named_Boxarts/、Named_Logos/ 等标准目录，文件名为匹配的游戏名
+python -m scripts.cover_cli download-folder --path "F:\Roms\n64" --system "Nintendo - Nintendo 64" --output "F:\Roms\n64\thumbnails" --type all --preset retroarch
+
+# Simple：所有封面直接存到 output 目录
+python -m scripts.cover_cli download-folder --path "F:\Roms\snes" --system "Nintendo - Super Nintendo Entertainment System" --output "F:\Roms\snes\covers" --preset simple
 ```
 
 ### 查看可用预设
