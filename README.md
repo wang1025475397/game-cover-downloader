@@ -38,12 +38,12 @@ The `libretro_data/` directory (~400 MB) contains the game name database and is 
 python fetch_data.py
 ```
 
-This will automatically download and extract the data from the latest [GitHub Release](https://github.com/wang1025475397/game-cover-downloader/releases).
+This will automatically download and extract `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader).
 
 <details>
 <summary>Manual download</summary>
 
-If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [Releases page](https://github.com/wang1025475397/game-cover-downloader/releases) and extract it to the project root.
+If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader) and extract it to the project root.
 
 Make sure the final structure looks like this (avoid nested `libretro_data/libretro_data/`):
 

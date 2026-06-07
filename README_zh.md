@@ -38,12 +38,12 @@ pip install -r requirements.txt
 python fetch_data.py
 ```
 
-脚本会自动从最新 [GitHub Release](https://github.com/wang1025475397/game-cover-downloader/releases) 下载并解压数据。
+脚本会自动从[仓库](https://github.com/wang1025475397/game-cover-downloader)下载并解压 `libretro_data.zip`。
 
 <details>
 <summary>手动下载</summary>
 
-如果 `fetch_data.py` 无法运行，可以从 [Releases 页面](https://github.com/wang1025475397/game-cover-downloader/releases) 手动下载 `libretro_data.zip` 并解压到项目根目录。
+如果 `fetch_data.py` 无法运行，可以从[仓库](https://github.com/wang1025475397/game-cover-downloader)手动下载 `libretro_data.zip` 并解压到项目根目录。
 
 确保最终结构如下（避免 `libretro_data/libretro_data/` 嵌套）：
 

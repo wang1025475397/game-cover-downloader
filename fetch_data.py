@@ -17,7 +17,7 @@ PROJECT_ROOT = Path(__file__).parent
 DATA_DIR = PROJECT_ROOT / "libretro_data"
 
 # 替换为你的实际 GitHub 仓库地址
-RELEASE_URL = "https://github.com/wang1025475397/game-cover-downloader/releases/latest/download/libretro_data.zip"
+RELEASE_URL = "https://raw.githubusercontent.com/wang1025475397/game-cover-downloader/main/libretro_data.zip"
 
 
 def is_data_present() -> bool:
