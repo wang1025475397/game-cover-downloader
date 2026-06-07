@@ -1,0 +1,39 @@
+{
+  "pegasus": {
+    "rule": {
+      "Named_Boxarts": {"dir": "{output}/{game}", "name": "boxFront"},
+      "Named_Logos": {"dir": "{output}/{game}", "name": "logo"},
+      "Named_Titles": {"dir": "{output}/{game}", "name": "title"},
+      "Named_Snaps": {"dir": "{output}/{game}", "name": "snap"}
+    },
+    "filename": "game",
+    "desc": "Pegasus: 每个游戏一个文件夹，封面 boxFront.png，logo.png"
+  },
+  "es-de": {
+    "rule": {
+      "Named_Boxarts": {"dir": "{output}/covers", "name": "{rom}"},
+      "Named_Logos": {"dir": "{output}/marquees", "name": "{rom}"},
+      "Named_Titles": {"dir": "{output}/titlescreens", "name": "{rom}"},
+      "Named_Snaps": {"dir": "{output}/screenshots", "name": "{rom}"}
+    },
+    "filename": "rom",
+    "desc": "ES-DE: 按类型分子目录(covers/marquees/...)，文件名用 ROM 名"
+  },
+  "retroarch": {
+    "rule": {
+      "Named_Boxarts": {"dir": "{output}/Named_Boxarts", "name": "{game}"},
+      "Named_Logos": {"dir": "{output}/Named_Logos", "name": "{game}"},
+      "Named_Titles": {"dir": "{output}/Named_Titles", "name": "{game}"},
+      "Named_Snaps": {"dir": "{output}/Named_Snaps", "name": "{game}"}
+    },
+    "filename": "game",
+    "desc": "RetroArch: Libretro 标准目录结构 Named_Boxarts/ 等"
+  },
+  "simple": {
+    "rule": {
+      "Named_Boxarts": {"dir": "{output}", "name": "{game}"}
+    },
+    "filename": "game",
+    "desc": "Simple: 所有封面直接存到 output 目录，文件名为游戏名"
+  }
+}
