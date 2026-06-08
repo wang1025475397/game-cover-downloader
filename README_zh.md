@@ -40,17 +40,17 @@ pip install -r requirements.txt
 python fetch_data.py
 ```
 
-脚本会自动从[仓库](https://github.com/wang1025475397/game-cover-downloader)下载并解压 `libretro_data.zip`。
+脚本会自动从[仓库](https://github.com/wang1025475397/game-cover-downloader-skill)下载并解压 `libretro_data.zip`。
 
 <details>
 <summary>手动下载</summary>
 
-如果 `fetch_data.py` 无法运行，可以从[仓库](https://github.com/wang1025475397/game-cover-downloader)手动下载 `libretro_data.zip` 并解压到项目根目录。
+如果 `fetch_data.py` 无法运行，可以从[仓库](https://github.com/wang1025475397/game-cover-downloader-skill)手动下载 `libretro_data.zip` 并解压到项目根目录。
 
 确保最终结构如下（避免 `libretro_data/libretro_data/` 嵌套）：
 
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   libretro_data/         ← 这个文件夹必须直接在项目根目录下
     mediadata/
     metadata/
@@ -60,7 +60,7 @@ game-cover-downloader/
 
 **错误** ❌：
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   libretro_data/
     libretro_data/       ← 嵌套了！把内层文件夹上移一级
       mediadata/
@@ -135,12 +135,12 @@ python -m scripts.cover_cli save-preset --name "my-n64" --rule '{"Named_Boxarts"
 
 | 客户端 | 用户级路径（推荐） | 项目级路径 |
 |--------|-------------------|-----------|
-| **Claude Code** | `~/.claude/skills/game-cover-downloader/` | `.claude/skills/game-cover-downloader/` |
-| **Codex CLI** | `~/.codex/skills/game-cover-downloader/` | `.codex/skills/game-cover-downloader/` |
-| **OpenClaw** | `~/.openclaw/skills/game-cover-downloader/` | `<workspace>/skills/game-cover-downloader/` |
-| **CodeBuddy** | `~/.codebuddy/skills/game-cover-downloader/` | `.codebuddy/skills/game-cover-downloader/` |
+| **Claude Code** | `~/.claude/skills/game-cover-downloader-skill/` | `.claude/skills/game-cover-downloader-skill/` |
+| **Codex CLI** | `~/.codex/skills/game-cover-downloader-skill/` | `.codex/skills/game-cover-downloader-skill/` |
+| **OpenClaw** | `~/.openclaw/skills/game-cover-downloader-skill/` | `<workspace>/skills/game-cover-downloader-skill/` |
+| **CodeBuddy** | `~/.codebuddy/skills/game-cover-downloader-skill/` | `.codebuddy/skills/game-cover-downloader-skill/` |
 
-> **Windows 用户**：`~` 对应 `%USERPROFILE%`，例如 `C:\Users\你的用户名\.claude\skills\game-cover-downloader\`
+> **Windows 用户**：`~` 对应 `%USERPROFILE%`，例如 `C:\Users\你的用户名\.claude\skills\game-cover-downloader-skill\`
 
 ### 安装步骤
 
@@ -148,18 +148,18 @@ python -m scripts.cover_cli save-preset --name "my-n64" --rule '{"Named_Boxarts"
 
 ```bash
 # Claude Code 示例，其他客户端替换路径即可
-git clone https://github.com/wang1025475397/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
+git clone https://github.com/wang1025475397/game-cover-downloader-skill.git ~/.claude/skills/game-cover-downloader-skill
 ```
 
 **方式二：手动复制**
 
 1. 下载本项目 ZIP 并解压
-2. 将整个 `game-cover-downloader` 文件夹复制到上表中对应客户端的 skills 目录
-3. 确保目录结构为 `<skills路径>/game-cover-downloader/SKILL.md`
+2. 将整个 `game-cover-downloader-skill` 文件夹复制到上表中对应客户端的 skills 目录
+3. 确保目录结构为 `<skills路径>/game-cover-downloader-skill/SKILL.md`
 
 **方式三：项目级安装（团队共享）**
 
-将 `game-cover-downloader` 文件夹放在项目根目录的对应位置（如 `.claude/skills/`），通过 Git 与团队共享。
+将 `game-cover-downloader-skill` 文件夹放在项目根目录的对应位置（如 `.claude/skills/`），通过 Git 与团队共享。
 
 ### 验证安装
 
@@ -172,7 +172,7 @@ git clone https://github.com/wang1025475397/game-cover-downloader.git ~/.claude/
 ## 项目结构
 
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   SKILL.md                       # AI Skill 定义文件
   requirements.txt               # Python 依赖
   fetch_data.py                  # 数据下载脚本

@@ -1,5 +1,5 @@
 ---
-name: "game-cover-downloader"
+name: "game-cover-downloader-skill"
 description: "Downloads game cover thumbnails with tiny-scraper. Invoke when user asks to find or download covers for games, ROM files, or ROM folders."
 ---
 
@@ -17,7 +17,7 @@ The backend is the tiny-scraper CLI in this repository. Always run commands from
 ## Project Structure
 
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   SKILL.md                       # This file
   fetch_data.py                  # Data download script (downloads libretro_data from GitHub Release)
   scripts/

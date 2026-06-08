@@ -40,17 +40,17 @@ The `libretro_data/` directory (~400 MB) contains the game name database and is 
 python fetch_data.py
 ```
 
-This will automatically download and extract `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader).
+This will automatically download and extract `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader-skill).
 
 <details>
 <summary>Manual download</summary>
 
-If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader) and extract it to the project root.
+If `fetch_data.py` doesn't work, you can manually download `libretro_data.zip` from the [repository](https://github.com/wang1025475397/game-cover-downloader-skill) and extract it to the project root.
 
 Make sure the final structure looks like this (avoid nested `libretro_data/libretro_data/`):
 
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   libretro_data/         ← this folder must be directly under the project root
     mediadata/
     metadata/
@@ -60,7 +60,7 @@ game-cover-downloader/
 
 **Wrong** ❌:
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   libretro_data/
     libretro_data/       ← nested! drag the inner folder up one level
       mediadata/
@@ -135,12 +135,12 @@ This tool follows the [Agent Skills standard](https://docs.anthropic.com/en/docs
 
 | Client | User-level Path (Recommended) | Project-level Path |
 |--------|-------------------------------|-------------------|
-| **Claude Code** | `~/.claude/skills/game-cover-downloader/` | `.claude/skills/game-cover-downloader/` |
-| **Codex CLI** | `~/.codex/skills/game-cover-downloader/` | `.codex/skills/game-cover-downloader/` |
-| **OpenClaw** | `~/.openclaw/skills/game-cover-downloader/` | `<workspace>/skills/game-cover-downloader/` |
-| **CodeBuddy** | `~/.codebuddy/skills/game-cover-downloader/` | `.codebuddy/skills/game-cover-downloader/` |
+| **Claude Code** | `~/.claude/skills/game-cover-downloader-skill/` | `.claude/skills/game-cover-downloader-skill/` |
+| **Codex CLI** | `~/.codex/skills/game-cover-downloader-skill/` | `.codex/skills/game-cover-downloader-skill/` |
+| **OpenClaw** | `~/.openclaw/skills/game-cover-downloader-skill/` | `<workspace>/skills/game-cover-downloader-skill/` |
+| **CodeBuddy** | `~/.codebuddy/skills/game-cover-downloader-skill/` | `.codebuddy/skills/game-cover-downloader-skill/` |
 
-> **Windows users**: `~` corresponds to `%USERPROFILE%`, e.g. `C:\Users\YourName\.claude\skills\game-cover-downloader\`
+> **Windows users**: `~` corresponds to `%USERPROFILE%`, e.g. `C:\Users\YourName\.claude\skills\game-cover-downloader-skill\`
 
 ### Installation Steps
 
@@ -148,18 +148,18 @@ This tool follows the [Agent Skills standard](https://docs.anthropic.com/en/docs
 
 ```bash
 # Example for Claude Code — replace the path for other clients
-git clone https://github.com/wang1025475397/game-cover-downloader.git ~/.claude/skills/game-cover-downloader
+git clone https://github.com/wang1025475397/game-cover-downloader-skill.git ~/.claude/skills/game-cover-downloader-skill
 ```
 
 **Option 2: Manual Copy**
 
 1. Download and extract the project ZIP
-2. Copy the entire `game-cover-downloader` folder to the client's skills directory from the table above
-3. Ensure the directory structure is `<skills-path>/game-cover-downloader/SKILL.md`
+2. Copy the entire `game-cover-downloader-skill` folder to the client's skills directory from the table above
+3. Ensure the directory structure is `<skills-path>/game-cover-downloader-skill/SKILL.md`
 
 **Option 3: Project-level Install (Team Sharing)**
 
-Place the `game-cover-downloader` folder in the project root's corresponding location (e.g. `.claude/skills/`) and share it via Git.
+Place the `game-cover-downloader-skill` folder in the project root's corresponding location (e.g. `.claude/skills/`) and share it via Git.
 
 ### Verify Installation
 
@@ -172,7 +172,7 @@ Restart your AI coding assistant after installation. Mention downloading game co
 ## Project Structure
 
 ```
-game-cover-downloader/
+game-cover-downloader-skill/
   SKILL.md                       # AI Skill definition
   requirements.txt               # Python dependencies
   fetch_data.py                  # Data download script
